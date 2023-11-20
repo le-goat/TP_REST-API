@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}
+            <form id="myCompanyForm" method="post" action="{{ path("my_form") }}">
+                <label for="name">Nom de l'entreprise</label>
+                <input type="text" id="name" name="name" required>
+
+                <button type="submit">Envoyer</button>
+            </form>
+            <div id="results" style="background-color: whitesmoke; border-radius: 2rem; padding: 3rem; margin: 2rem; display: flex; flex-direction: column; align-items: center">
+                {% for company in resultsCompanies %}
+                    <div class="companySelected" data-id="{{ company.id }}" style="
+                    display: flex;
+                    flex-direction: column;
+                    background-color: #7DA0B1;
+                    padding: 1rem;
+                    border-radius: 1rem;
+                    margin-top: 2rem;
+                    width: 30rem;
+                    ">
+                        <p style="margin: 0.4rem">Company name : {{ company.name }}</p>
+                        <p style="margin: 0.4rem">Company address : {{ company.address }}</p>
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endblock %}
+    </body>
+
+    <script>
+        $(document).ready(function() {
+            $(".companySelected").click(function() {
+                var companyId = $(this).data("id");
+
+                console.log({companyId})
+
+                // Vous pouvez effectuer une action en fonction de l'ID de l'entreprise, par exemple, une requête AJAX pour obtenir plus d'informations
+                // $.ajax({
+                //     url: '/votre_route/' + companyId,
+                //     type: 'GET',
+                //     success: function(data) {
+                //         // Traitement des données
+                //     },
+                //     error: function() {
+                //         // Gestion des erreurs
+                //     }
+                // });
+            });
+        });
+    </script>
+</html>
