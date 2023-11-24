@@ -47,6 +47,7 @@
       <excludeFolder url="file://$MODULE_DIR$/TP_REST-API/vendor/symfony/var-exporter" />
       <excludeFolder url="file://$MODULE_DIR$/TP_REST-API/vendor/symfony/yaml" />
       <excludeFolder url="file://$MODULE_DIR$/TP_REST-API/vendor/twig/twig" />
+      <excludeFolder url="file://$MODULE_DIR$/TP_REST-API/vendor/symfony/asset" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

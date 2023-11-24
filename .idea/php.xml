@@ -55,6 +55,7 @@
       <path value="$PROJECT_DIR$/TP_REST-API/vendor/symfony/polyfill-intl-normalizer" />
       <path value="$PROJECT_DIR$/TP_REST-API/vendor/symfony/runtime" />
       <path value="$PROJECT_DIR$/TP_REST-API/vendor/symfony/twig-bundle" />
+      <path value="$PROJECT_DIR$/TP_REST-API/vendor/symfony/asset" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />

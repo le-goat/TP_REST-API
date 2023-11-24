@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}company details{% endblock %}
+
+{% block body %}
+
+    <style>
+        .details_company {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+
+    <section class="details_company">
+        <div id="list-company" style="
+                    display: flex;
+                    flex-direction: column;
+                    background-color: #7DA0B1;
+                    padding: 1rem;
+                    border-radius: 1rem;
+                    margin-top: 2rem;
+                    width: 30rem;
+                    color: whitesmoke;
+                    ">
+            <div>
+                NOM : {{ detailsCompany.0.name }}
+            </div>
+            <div>
+                SIREN : {{ detailsCompany.0.siren }}
+            </div>
+            <div>
+                SIRET : {{ detailsCompany.0.siret }}
+            </div>
+            <div>
+                Raison sociale : {{ detailsCompany.0.raisonSociale }}
+            </div>
+            <div>
+                Adresse : {{ detailsCompany.0.address }}
+            </div>
+        </div>
+        <form id="myCompanyForm" method="post" action="{{ path("company_details", {"siren": detailsCompany.0.id}) }}">
+            <input type="text" id="salaire_brut" placeholder="Salaire brut" name="salaire_brut" required>
+            <button type="submit">Envoyer</button>
+        </form>
+        <div id="result-container">
+            {% if salaireCDI is defined and salaireCDI.evaluate is defined %}
+                <h2>Salaire CDI :</h2>
+                <ul>
+                    {% for result in salaireCDI.evaluate %}
+                        <li>{{ result.nodeValue|number_format(2, '.', ' ') }} € / {{ result.unit.denominators[0] }} - {{ result.traversedVariables[0]|replace({'salarié . ': ''}) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div id="result-container">
+            {% if gratificationStage is defined and gratificationStage.evaluate is defined %}
+                <h2>Gratification de Stage :</h2>
+                <ul>
+                    {% for result in gratificationStage.evaluate %}
+                        <li>{{ result.nodeValue|number_format(2, '.', ' ') }} € / {{ result.unit.denominators[0] }} - {{ result.traversedVariables[0]|replace({'salarié . ': ''}) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div id="result-container">
+            {% if salaireAlternance is defined and salaireAlternance.evaluate is defined %}
+                <h2>Salaire en Alternance :</h2>
+                <ul>
+                    {% for result in salaireAlternance.evaluate %}
+                        <li>{{ result.nodeValue|number_format(2, '.', ' ') }} € / {{ result.unit.denominators[0] }} - {{ result.traversedVariables[0]|replace({'salarié . ': ''}) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div id="result-container">
+            {% if salaireCDD is defined and salaireCDD.evaluate is defined %}
+                <h2>Salaire CDD :</h2>
+                <ul>
+                    {% for result in salaireCDD.evaluate %}
+                        <li>{{ result.nodeValue|number_format(2, '.', ' ') }} € / {{ result.unit.denominators[0] }} - {{ result.traversedVariables[0]|replace({'salarié . ': ''}) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </section>
+
+{% endblock %}

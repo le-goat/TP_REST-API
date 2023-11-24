@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
+use App\Service\UrssafApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +12,14 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class HomeController extends AbstractController
 {
+
+    private $urssafApiService;
+
+    public function __construct(UrssafApiService $urssafApiService)
+    {
+        $this->urssafApiService = $urssafApiService;
+    }
+
     /**
      * @throws TransportExceptionInterface
      */
@@ -57,6 +65,7 @@ class HomeController extends AbstractController
                 $siren = $item["siren"] ?? 'Siren inconnue';
                 $siret = $item["siege"]["siret"] ?? 'Siret inconnue';
                 $address = $item['siege']['adresse'] ?? 'Adresse inconnue';
+                $raisonSociale = $item["nom_raison_sociale"] ?? "non disponible";
 
 
                 $detailsCompanyToDisplay[] = [
@@ -64,6 +73,7 @@ class HomeController extends AbstractController
                     "siren" => $siren,
                     "siret" => $siret,
                     "address" => $address,
+                    "raisonSociale" => $raisonSociale,
                     "id" => $siren,
                 ];
             }
@@ -80,6 +90,9 @@ class HomeController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route("/result", name: "my_form")]
     public function myForm(Request $request)
     {
@@ -88,14 +101,39 @@ class HomeController extends AbstractController
 
         $data = $this->apiRequestAction($COMPANY_URL);
 
-        dump($data);
-
         $resultPreviewCompany = $this->getPreviewCompany($data);
-        $resultDetailsCompany = $this->getDetailsCompany($data);
 
         return $this->render("home/home.html.twig", [
             "resultsCompanies" => $resultPreviewCompany,
-            "detailsCompany" => $resultDetailsCompany,
         ]);
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    #[Route('/{siren}', name: 'company_details')]
+    public function companyDetails(string $siren, Request $request): Response
+    {
+        $COMPANY_URL = "https://recherche-entreprises.api.gouv.fr/search?q=${siren}";
+
+        $data = $this->apiRequestAction($COMPANY_URL);
+        $resultDetailsCompany = $this->getDetailsCompany($data);
+
+        // Correction : utilisez "salaire_brut" au lieu de "salaire_brut" dans la ligne suivante
+        $salaireBrut = $request->request->get("salaire_brut");
+
+        $salaireCDI = $this->urssafApiService->calculateSalaryCDI($resultDetailsCompany[0]['siren'], $salaireBrut);
+        $gratificationStage = $this->urssafApiService->calculateInternship($resultDetailsCompany[0]['siren']);
+        $salaireAlternance = $this->urssafApiService->calculateWorkStudy($resultDetailsCompany[0]['siren'], $salaireBrut);
+        $salaireCDD = $this->urssafApiService->calculateFixedTermContract($resultDetailsCompany[0]['siren'], $salaireBrut);
+
+        return $this->render('home/company_details.html.twig', [
+            "detailsCompany" => $resultDetailsCompany,
+            "salaireCDI" => $salaireCDI,
+            "gratificationStage" => $gratificationStage,
+            "salaireAlternance" => $salaireAlternance,
+            "salaireCDD" => $salaireCDD,
+        ]);
+    }
+
 }
